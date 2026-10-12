@@ -71,3 +71,29 @@ describe('guide pages', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Fikir (Opinion)' })).toBeInTheDocument()
   })
 })
+
+describe('part 2 page', () => {
+  test('template section lists slots for each cue type', () => {
+    at('/part2')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Part 2')
+    expect(screen.getByRole('heading', { level: 3, name: 'Kişi' })).toBeInTheDocument()
+  })
+  test('unknown section falls back to template', () => {
+    at('/part2/nope')
+    expect(screen.getByRole('heading', { level: 2, name: 'Not şablonu' })).toBeInTheDocument()
+  })
+  test('story is saved to localStorage and counted', () => {
+    at('/part2/stories')
+    const box = screen.getAllByLabelText('Türkçe notların')[0]
+    fireEvent.change(box, { target: { value: "Babamla Ankara'ya gittik" } })
+    expect(JSON.parse(localStorage.getItem('stories-v1'))['person-admire'].tr).toBe("Babamla Ankara'ya gittik")
+    expect(screen.getByLabelText('Doldurulan hikâye')).toHaveTextContent('1/8')
+  })
+  test.each(['null', '5', '"x"', '[]'])('corrupt stories storage (%s) does not crash', (raw) => {
+    localStorage.setItem('stories-v1', raw)
+    at('/part2/stories')
+    expect(screen.getByLabelText('Doldurulan hikâye')).toHaveTextContent('0/8')
+    fireEvent.change(screen.getAllByLabelText('Türkçe notların')[0], { target: { value: 'x' } })
+    expect(screen.getByLabelText('Doldurulan hikâye')).toHaveTextContent('1/8')
+  })
+})

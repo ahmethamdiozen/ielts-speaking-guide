@@ -11,6 +11,7 @@ export const TABS = [
   { to: '/method', label: 'Yöntem', cls: 'tab-1' },
   { to: '/phrases', label: 'Kalıplar', cls: 'tab-2' },
   { to: '/part1', label: 'Part 1', cls: 'tab-1' },
+  { to: '/part2', label: 'Part 2', cls: 'tab-2' },
   { to: '/part3', label: 'Part 3', cls: 'tab-3' },
 ]
 

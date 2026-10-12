@@ -26,3 +26,17 @@ test('part3 ladder, echo and angles', () => {
   expect(part3.echo.weak).toBeTruthy(); expect(part3.echo.strong).toBeTruthy()
   expect(part3.sample.answer).toBeTruthy()
 })
+
+import { stories } from '../src/data/stories.js'
+
+test('stories: 8 templates, valid fits, unique ids', () => {
+  expect(stories).toHaveLength(8)
+  expect(new Set(stories.map((s) => s.id)).size).toBe(8)
+  const types = part2.types.map((t) => t.id)
+  for (const s of stories) {
+    expect(s.label && s.prompt, s.id).toBeTruthy()
+    expect(s.fits.length, s.id).toBeGreaterThan(0)
+    for (const f of s.fits) expect(types, s.id).toContain(f)
+  }
+  for (const t of types) expect(stories.some((s) => s.fits.includes(t)), t).toBe(true)
+})

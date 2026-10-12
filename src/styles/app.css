@@ -277,3 +277,18 @@ fieldset.field label { display: flex; gap: .5rem; align-items: center; font-weig
 .role-link .rolechip, .role-wrap .rolechip { background: var(--ink-soft); }
 .role-paraphrase .rolechip, .role-restate .rolechip { background: var(--accent-1); }
 .toggle { display: flex; gap: .5rem; align-items: center; font-family: var(--font-ui); margin-bottom: .5rem; }
+
+/* Speaking */
+.field textarea {
+  padding: .6rem .8rem; border: 2px solid var(--line); border-radius: 8px; background: var(--surface);
+  color: var(--ink); font: inherit; resize: vertical;
+}
+.field textarea:focus { border-color: var(--accent); }
+.timer { font: 800 3rem var(--font-ui); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.timer.low { color: var(--warn-line); }
+.slot-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.slot-card { background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: .8rem 1rem; }
+.slot-card h4 { margin: 0 0 .2rem; }
+.timeline { list-style: none; padding: 0; display: grid; gap: .8rem; }
+.timeline > li { background: var(--surface); border: 2px solid var(--line); border-left: 6px solid var(--accent); border-radius: 12px; padding: .8rem 1rem; margin: 0; }
+.time-label { font: 700 .85rem var(--font-ui); color: var(--accent); }
