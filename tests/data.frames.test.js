@@ -40,3 +40,7 @@ test('stories: 8 templates, valid fits, unique ids', () => {
   }
   for (const t of types) expect(stories.some((s) => s.fits.includes(t)), t).toBe(true)
 })
+
+test('method rules have short names for the mind map', () => {
+  for (const r of method.rules) { expect(r.short, r.title).toBeTruthy(); expect(r.short.length).toBeLessThanOrEqual(24) }
+})

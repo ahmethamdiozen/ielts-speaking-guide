@@ -294,3 +294,24 @@ fieldset.field label { display: flex; gap: .5rem; align-items: center; font-weig
 .time-label { font: 700 .85rem var(--font-ui); color: var(--accent); }
 
 .tasks { flex-wrap: wrap; }
+
+/* Zihin haritası */
+.mm { position: relative; max-width: 1600px; margin: 0 auto; padding: 0 1rem 2rem; }
+.mm-svg {
+  display: block; width: 100%; height: calc(100vh - 14rem); min-height: 520px;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 12px;
+  cursor: grab; user-select: none; touch-action: none;
+}
+.mm-svg:active { cursor: grabbing; }
+.mm-controls { position: absolute; top: .8rem; right: 2rem; z-index: 5; display: flex; gap: .4rem; }
+.mm-controls .secondary-btn { margin: 0; padding: .35rem .9rem; background: var(--surface); }
+.mm-link { fill: none; stroke-width: 3; opacity: .55; }
+.mm-root-text { fill: #fff; font: 800 38px var(--font-ui); }
+.mm-box-text { fill: #fff; font: 700 23px var(--font-ui); pointer-events: none; }
+.mm-box-1 { font-size: 31px; font-weight: 800; }
+.mm-leaf-text { font: 600 21px var(--font-ui); pointer-events: none; }
+.mm-node.is-link { cursor: pointer; }
+.mm-node.is-link:hover rect, .mm-node.is-link:focus rect { stroke: var(--ink); stroke-width: 4; }
+.mm-node.is-link:hover text.mm-leaf-text, .mm-node.is-link:focus text.mm-leaf-text { text-decoration: underline; }
+.mm-node:focus { outline: none; }
+@media print { .topbar, .mm-controls { display: none; } .mm-svg { height: 100vh; border: 0; } }

@@ -2,14 +2,17 @@ export const method = {
   rules: [
     {
       title: 'Kalıpla başla, grameri kilitleme',
+      short: 'Kalıpla başla',
       body: 'Cümleye hemen "ana fikri" kurmaya çalışma. Önce "I\'d say…", "The thing is…", "To be honest…" gibi bir kalıp söyle. Kalıp seni hiçbir yapıya mahkûm etmez, bu sırada ne diyeceğini düşünürsün. Cümlenin ortasında yanlış gittiğini fark edersen baştan kurma: "or rather", "what I mean is" ile aynı cümlenin içinde düzelt.',
     },
     {
       title: 'İskeleti doldur, fikir arama',
+      short: 'İskeleti doldur',
       body: 'Her cevabın bir iskeleti var: Cevap → Sebep → Örnek (Part 3\'te bir de geniş açı). "Ne diyeceğim?" yerine "Şimdi hangi kutudayım?" diye sor. Kutuları sırayla doldurmak ne diyeceğini seçmekten çok daha kolaydır, çünkü her kutunun ne istediği belli.',
     },
     {
       title: 'Sessizlik yerine kalıp',
+      short: 'Sessizlik yerine kalıp',
       body: 'Düşünmen gerekiyorsa susma; "Let me think", "That\'s a good question" de. Kelime bulamıyorsan "It\'s a kind of…", "It\'s something you use to…" ile tarif et. Konuşmanın akması, kelimenin kusursuz olmasından daha önemlidir.',
     },
   ],
