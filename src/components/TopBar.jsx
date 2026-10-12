@@ -9,6 +9,7 @@ const prefersDark = () => {
 
 export const TABS = [
   { to: '/method', label: 'Yöntem', cls: 'tab-1' },
+  { to: '/phrases', label: 'Kalıplar', cls: 'tab-2' },
 ]
 
 export default function TopBar({ query, onQuery }) {
