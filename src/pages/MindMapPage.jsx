@@ -8,7 +8,7 @@ export default function MindMapPage() {
     <div className="page-1">
       <div className="page-head">
         <h1>Zihin haritası</h1>
-        <p className="lead">Tekerlekle yakınlaştır, sürükleyerek kaydır. Bir kutuya ya da kelimeye tıklarsan ilgili sayfa açılır.</p>
+        <p className="lead">Tekerlekle yakınlaştır, sürükleyerek kaydır. Bir düğüme tıklayınca seçilir (not yazabilir, dalı kapatabilirsin), çift tıklarsan ilgili sayfa açılır.</p>
       </div>
       <MindMap tree={tree} />
     </div>

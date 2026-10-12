@@ -1,5 +1,5 @@
 import { buildMindMap } from '../src/data/mindmap.js'
-import { layoutTree, boxSize } from '../src/lib/mindmap.js'
+import { layoutTree, boxFootprint } from '../src/lib/mindmap.js'
 import { categories, entries } from '../src/data/phrases/index.js'
 import { stories } from '../src/data/stories.js'
 import { part2 } from '../src/data/frames.js'
@@ -38,7 +38,7 @@ test('every link target is a real page and section', () => {
 })
 test('boxes (branch nodes) never overlap', () => {
   const boxes = out.nodes.filter((n) => n.depth === 1 || (n.depth >= 2 && !n.leaf)).map((n) => {
-    const { w, h } = boxSize(n)
+    const { w, h } = boxFootprint(n)
     return { id: n.id, l: n.x - w / 2, r: n.x + w / 2, t: n.y - h / 2, b: n.y + h / 2 }
   })
   for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {

@@ -1,4 +1,4 @@
-import { layoutTree, boxSize, zoomAt, clientToView, MIN_K, MAX_K } from '../src/lib/mindmap.js'
+import { layoutTree, boxSize, boxFootprint, zoomAt, clientToView, MIN_K, MAX_K } from '../src/lib/mindmap.js'
 
 const tree = {
   id: 'root', label: 'Merkez',
@@ -88,6 +88,14 @@ describe('box placement', () => {
   })
 })
 
+describe('box footprint', () => {
+  test('footprint is wider than the drawn box so the collapse badge never touches a neighbour', () => {
+    const n = { label: 'Part 2', depth: 1 }
+    expect(boxFootprint(n).w).toBeGreaterThanOrEqual(boxSize(n).w + 40)
+    expect(boxFootprint(n).h).toBe(boxSize(n).h)
+  })
+})
+
 describe('zoomAt and clientToView', () => {
   const view = { k: 1, x: 0, y: 0 }
   test('zoom keeps the point under the cursor fixed', () => {
@@ -106,5 +114,70 @@ describe('zoomAt and clientToView', () => {
     const p = clientToView(rect, 1000, 1000, 10 + 200, 20 + 100) // centre of the box
     expect(p.x).toBeCloseTo(500); expect(p.y).toBeCloseTo(500)
     expect(clientToView({ left: 0, top: 0, width: 0, height: 0 }, 1000, 1000, 5, 5)).toEqual({ x: 0, y: 0 })
+  })
+})
+
+import { pruneTree, matchIds, ancestorIds, findPath, collapsibleIds } from '../src/lib/mindmap.js'
+
+describe('collapse, search and path helpers', () => {
+  const t = {
+    id: 'root', label: 'Merkez',
+    children: [
+      { id: 'a', label: 'Alfa dal', children: [
+        { id: 'a1', label: 'Elma', children: [{ id: 'a1x', label: 'Armut' }, { id: 'a1y', label: 'Kiraz' }] },
+        { id: 'a2', label: 'Muz' },
+      ] },
+      { id: 'b', label: 'Beta dal', children: [{ id: 'b1', label: 'Armut sepeti' }] },
+      { id: 'c', label: 'Ceta' },
+    ],
+  }
+  const idsOf = (n) => [n.id, ...(n.children ?? []).flatMap(idsOf)]
+
+  test('pruneTree hides the children of collapsed branches and flags them', () => {
+    const p = pruneTree(t, new Set(['a']))
+    const a = p.children[0]
+    expect(a.children).toBeUndefined()
+    expect(a.collapsed).toBe(true)
+    expect(a.hidden).toBe(4) // a1, a1x, a1y, a2
+    expect(idsOf(p)).not.toContain('a1x')
+    expect(idsOf(p)).toContain('b1')
+  })
+  test('pruneTree never collapses the root, ignores unknown and leaf ids, and does not mutate the input', () => {
+    const p = pruneTree(t, new Set(['root', 'nope', 'c']))
+    expect(idsOf(p)).toEqual(idsOf(t))
+    expect(p.collapsed).toBeUndefined()
+    pruneTree(t, new Set(['a']))
+    expect(t.children[0].children).toHaveLength(2)
+  })
+  test('forceOpen overrides collapsed', () => {
+    const p = pruneTree(t, new Set(['a', 'a1']), new Set(['a', 'a1']))
+    expect(idsOf(p)).toContain('a1x')
+  })
+  test('a collapsed branch is laid out as a box on the inner rings, not as a leaf on the outer ring', () => {
+    const out = layoutTree(pruneTree(t, new Set(['a1'])))
+    const a1 = out.nodes.find((n) => n.id === 'a1')
+    const ring = out.nodes.find((n) => n.id === 'a2').r
+    expect(a1.leaf).toBe(false)
+    expect(a1.collapsed).toBe(true)
+    expect(a1.r).toBeLessThan(ring)
+  })
+  test('matchIds is case-insensitive, trims, skips the root and returns nothing for an empty query', () => {
+    expect([...matchIds(t, ' ARMUT ')].sort()).toEqual(['a1x', 'b1'])
+    expect(matchIds(t, '').size).toBe(0)
+    expect(matchIds(t, '   ').size).toBe(0)
+    expect(matchIds(t, 'merkez').size).toBe(0)
+    expect(matchIds(t, '(*').size).toBe(0) // regex karakterleri çökertmez
+  })
+  test('ancestorIds returns every ancestor of the given nodes, excluding the nodes themselves', () => {
+    expect([...ancestorIds(t, new Set(['a1x']))].sort()).toEqual(['a', 'a1', 'root'])
+    expect(ancestorIds(t, new Set()).size).toBe(0)
+  })
+  test('findPath gives the labels from the first branch down to the node', () => {
+    expect(findPath(t, 'a1x')).toEqual(['Alfa dal', 'Elma', 'Armut'])
+    expect(findPath(t, 'root')).toEqual([])
+    expect(findPath(t, 'nope')).toEqual([])
+  })
+  test('collapsibleIds lists depth-1 branches that have children', () => {
+    expect(collapsibleIds(t).sort()).toEqual(['a', 'b'])
   })
 })

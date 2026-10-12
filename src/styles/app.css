@@ -303,7 +303,8 @@ fieldset.field label { display: flex; gap: .5rem; align-items: center; font-weig
   cursor: grab; user-select: none; touch-action: none;
 }
 .mm-svg:active { cursor: grabbing; }
-.mm-controls { position: absolute; top: .8rem; right: 2rem; z-index: 5; display: flex; gap: .4rem; }
+.mm-stage { position: relative; }
+.mm-controls { position: absolute; top: .8rem; right: .8rem; z-index: 5; display: flex; gap: .4rem; }
 .mm-controls .secondary-btn { margin: 0; padding: .35rem .9rem; background: var(--surface); }
 .mm-link { fill: none; stroke-width: 3; opacity: .55; }
 .mm-root-text { fill: #fff; font: 800 38px var(--font-ui); }
@@ -311,7 +312,31 @@ fieldset.field label { display: flex; gap: .5rem; align-items: center; font-weig
 .mm-box-1 { font-size: 31px; font-weight: 800; }
 .mm-leaf-text { font: 600 21px var(--font-ui); pointer-events: none; }
 .mm-node.is-link { cursor: pointer; }
-.mm-node.is-link:hover rect, .mm-node.is-link:focus rect { stroke: var(--ink); stroke-width: 4; }
+.mm-node.is-link:hover rect, .mm-node.is-link:focus rect, .mm-node[data-selected] rect { stroke: var(--ink); stroke-width: 5; }
 .mm-node.is-link:hover text.mm-leaf-text, .mm-node.is-link:focus text.mm-leaf-text { text-decoration: underline; }
 .mm-node:focus { outline: none; }
 @media print { .topbar, .mm-controls { display: none; } .mm-svg { height: 100vh; border: 0; } }
+
+.mm-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: .6rem; }
+.mm-bar .secondary-btn { margin: 0; padding: .35rem .9rem; font-size: .92rem; }
+.mm-search input { padding: .45rem .8rem; border: 2px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: .95rem; min-width: 220px; }
+.mm-search input:focus { border-color: var(--accent); }
+.mm-spacer { flex: 1; }
+.mm-panel { position: absolute; top: .8rem; left: .8rem; z-index: 5; width: 300px; max-height: calc(100% - 1.6rem); overflow: auto; background: var(--surface); border: 2px solid var(--ink); border-radius: 12px; padding: .9rem 1rem; box-shadow: 0 6px 24px rgba(0, 0, 0, .25); }
+.mm-panel h2 { font-size: 1.25rem; margin: 0 0 .2rem; }
+.mm-path { color: var(--ink-soft); font-size: .88rem; margin: 0 0 .6rem; }
+.mm-panel-actions { display: flex; flex-wrap: wrap; gap: .4rem; margin: .4rem 0; }
+.mm-panel-actions .primary-btn, .mm-panel-actions .secondary-btn { margin: 0; padding: .35rem .8rem; font-size: .9rem; }
+.mm-panel .field { margin: .6rem 0 0; }
+.mm-badge { cursor: pointer; }
+.mm-badge circle { fill: var(--surface); stroke: var(--ink); stroke-width: 3; }
+.mm-badge text { fill: var(--ink); font: 800 26px var(--font-ui); pointer-events: none; }
+.mm-badge:hover circle, .mm-badge:focus circle { fill: var(--marker); }
+.mm-ring { fill: none; stroke: var(--ink); stroke-width: 4; }
+.mm-halo { fill: var(--marker); opacity: .85; }
+.mm-note-mark { fill: var(--accent-3); font: 700 26px var(--font-ui); pointer-events: none; }
+.mm-node[data-dim] { opacity: .16; }
+.mm-link.is-dim { opacity: .08; }
+.mm-node[data-match] .mm-leaf-text { font-weight: 800; }
+.mm-node[data-match] rect { stroke: var(--marker); stroke-width: 6; }
+@media print { .mm-bar, .mm-panel { display: none; } }
