@@ -6,7 +6,8 @@ const RADII = [0, 430, 860, 1300]
 const OUTER_STEP = 420
 const MARGIN = 460
 
-const radiusOf = (depth) => (depth < RADII.length ? RADII[depth] : RADII[RADII.length - 1] + (depth - RADII.length + 1) * OUTER_STEP)
+const radiiFor = (scale) => RADII.map((r) => r * scale)
+const radiusOf = (R, depth) => (depth < R.length ? R[depth] : R[R.length - 1] + (depth - R.length + 1) * OUTER_STEP)
 
 // Her yaprak aynı payı alır; dal düğümleri çocuklarının toplamını alır.
 const weight = (n) => (n.children?.length ? n.children.reduce((s, c) => s + weight(c), 0) : 1)
@@ -19,20 +20,19 @@ export function boxSize({ label, depth }) {
 
 const BOX_GAP = 28
 const LEAF_ARC = 26
-const RING = RADII[RADII.length - 1]
 const isBox = (n, depth) => depth <= 1 || (n.children?.length ?? 0) > 0
 
 // Bir düğümün (ve altındakilerin) ihtiyaç duyduğu en az açı (radyan).
-function need(n, depth) {
+function need(n, depth, R) {
   const kids = n.children ?? []
-  const own = isBox(n, depth) ? (boxSize({ label: n.label, depth }).w + BOX_GAP) / radiusOf(depth) : LEAF_ARC / RING
-  return Math.max(own, kids.reduce((s, c) => s + need(c, depth + 1), 0))
+  const own = isBox(n, depth) ? (boxSize({ label: n.label, depth }).w + BOX_GAP) / radiusOf(R, depth) : LEAF_ARC / R[R.length - 1]
+  return Math.max(own, kids.reduce((s, c) => s + need(c, depth + 1, R), 0))
 }
 
 // Kardeşlere payı: ağırlıkla orantılı, ama hiçbiri ihtiyacının altına düşmez.
-function distribute(kids, depth, available) {
+function distribute(kids, depth, available, R) {
   const w = kids.map(weight)
-  const floor = kids.map((c) => need(c, depth))
+  const floor = kids.map((c) => need(c, depth, R))
   const fixed = kids.map(() => false)
   for (let guard = 0; guard < kids.length; guard++) {
     const fixedSum = floor.reduce((s, f, i) => s + (fixed[i] ? f : 0), 0)
@@ -54,7 +54,20 @@ function distribute(kids, depth, available) {
 
 const polar = (r, a) => [r * Math.cos(a), r * Math.sin(a)]
 
+// Alt sınırlar çevreye sığana kadar halka yarıçaplarını büyütür (küçük ağaçlarda ölçek 1 kalır).
+function fitRadii(root) {
+  let scale = 1
+  for (let i = 0; i < 60; i++) {
+    const R = radiiFor(scale)
+    const total = (root.children ?? []).reduce((s, c) => s + need(c, 1, R), 0)
+    if (total <= TAU * 0.97) break
+    scale *= 1.06
+  }
+  return radiiFor(scale)
+}
+
 export function layoutTree(root) {
+  const R = fitRadii(root)
   const nodes = []
   const links = []
   const seen = new Set()
@@ -66,7 +79,7 @@ export function layoutTree(root) {
     const angle = (a0 + a1) / 2
     const children = n.children ?? []
     const isLeaf = children.length === 0
-    const r = isLeaf && depth >= 2 ? Math.max(radiusOf(depth), RADII[RADII.length - 1]) : radiusOf(depth)
+    const r = isLeaf && depth >= 2 ? Math.max(radiusOf(R, depth), R[R.length - 1]) : radiusOf(R, depth)
     const [x, y] = polar(r, angle)
     const color = depth === 0
       ? 'hsl(222 32% 22%)'
@@ -76,7 +89,7 @@ export function layoutTree(root) {
     if (parent) links.push({ from: parent.id, to: n.id, color, pr: parent.r, pa: parent.angle, cr: r, ca: angle })
     maxR = Math.max(maxR, r)
 
-    const spans = distribute(children, depth + 1, a1 - a0)
+    const spans = distribute(children, depth + 1, a1 - a0, R)
     let a = a0
     children.forEach((c, i) => {
       place(c, depth + 1, a, a + spans[i], node, depth === 0 ? HUES[i % HUES.length] : hue)

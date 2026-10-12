@@ -59,6 +59,28 @@ describe('layoutTree', () => {
   })
 })
 
+describe('scaling for large trees', () => {
+  const big = {
+    id: 'r', label: 'R',
+    children: Array.from({ length: 5 }, (_, b) => ({
+      id: `b${b}`, label: `Dal numara ${b}`,
+      children: Array.from({ length: 4 }, (_, c) => ({
+        id: `b${b}c${c}`, label: `Alt dal ${b}-${c}`,
+        children: Array.from({ length: 20 }, (_, l) => ({ id: `b${b}c${c}l${l}`, label: `yaprak ${l}` })),
+      })),
+    })),
+  }
+  test('the canvas grows so leaf labels keep their spacing; small trees keep the base size', () => {
+    const small = layoutTree({ id: 'r', label: 'R', children: [{ id: 'a', label: 'A', children: [{ id: 'a1', label: 'x' }] }] })
+    const large = layoutTree(big)
+    expect(large.size).toBeGreaterThan(small.size)
+    const leaves = large.nodes.filter((n) => n.leaf && n.depth >= 2).sort((p, q) => p.angle - q.angle)
+    for (let i = 1; i < leaves.length; i++) {
+      expect((leaves[i].angle - leaves[i - 1].angle) * leaves[i].r, leaves[i].id).toBeGreaterThanOrEqual(24)
+    }
+  })
+})
+
 describe('box placement', () => {
   test('box size grows with label length and shrinks with depth', () => {
     expect(boxSize({ label: 'uzun bir etiket', depth: 1 }).w).toBeGreaterThan(boxSize({ label: 'kısa', depth: 1 }).w)
