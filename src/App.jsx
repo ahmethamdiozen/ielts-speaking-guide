@@ -3,6 +3,8 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import TopBar from './components/TopBar.jsx'
 import MethodPage from './pages/MethodPage.jsx'
 import PhrasesPage from './pages/PhrasesPage.jsx'
+import Part1Page from './pages/Part1Page.jsx'
+import Part3Page from './pages/Part3Page.jsx'
 
 export default function App() {
   const [query, setQuery] = useState('')
@@ -15,6 +17,8 @@ export default function App() {
         <Route path="/" element={<Navigate to="/method" replace />} />
         <Route path="/method" element={<MethodPage />} />
         <Route path="/phrases/:section?" element={<PhrasesPage query={query} />} />
+        <Route path="/part1" element={<Part1Page />} />
+        <Route path="/part3" element={<Part3Page />} />
         <Route path="*" element={<Navigate to="/method" replace />} />
       </Routes>
     </>

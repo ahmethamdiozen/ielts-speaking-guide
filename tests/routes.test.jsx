@@ -54,3 +54,20 @@ describe('phrases page', () => {
     expect(screen.getByLabelText('İlerleme')).toHaveTextContent('1/6')
   })
 })
+
+describe('guide pages', () => {
+  test('method page lists the three rules', () => {
+    at('/method')
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(3)
+  })
+  test('part1 page renders frame and sample', () => {
+    at('/part1')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Part 1')
+    expect(screen.getByRole('heading', { level: 3, name: 'Cevap' })).toBeInTheDocument()
+  })
+  test('part3 page renders ladder', () => {
+    at('/part3')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Part 3')
+    expect(screen.getByRole('heading', { level: 3, name: 'Fikir (Opinion)' })).toBeInTheDocument()
+  })
+})
