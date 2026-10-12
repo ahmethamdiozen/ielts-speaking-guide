@@ -8,6 +8,7 @@ import Part2Page from './pages/Part2Page.jsx'
 import DrillPage from './pages/DrillPage.jsx'
 import PracticePage from './pages/PracticePage.jsx'
 import MindMapPage from './pages/MindMapPage.jsx'
+import PlanPage from './pages/PlanPage.jsx'
 import Part3Page from './pages/Part3Page.jsx'
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/part3" element={<Part3Page />} />
         <Route path="/drill/:mode?" element={<DrillPage />} />
         <Route path="/practice" element={<PracticePage />} />
+        <Route path="/plan" element={<PlanPage />} />
         <Route path="/mindmap" element={<MindMapPage />} />
         <Route path="*" element={<Navigate to="/method" replace />} />
       </Routes>
