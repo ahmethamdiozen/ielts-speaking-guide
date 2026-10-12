@@ -14,6 +14,7 @@ export const TABS = [
   { to: '/part2', label: 'Part 2', cls: 'tab-2' },
   { to: '/part3', label: 'Part 3', cls: 'tab-3' },
   { to: '/drill', label: 'Çalışma', cls: 'tab-3' },
+  { to: '/practice', label: 'Alıştırma', cls: 'tab-3' },
 ]
 
 export default function TopBar({ query, onQuery }) {

@@ -135,3 +135,35 @@ describe('drill page', () => {
     expect(screen.getByRole('button', { name: 'Hazırlığı başlat' })).toBeInTheDocument()
   })
 })
+
+describe('practice page', () => {
+  test('starts a 10 question session for all phrases', () => {
+    at('/practice')
+    fireEvent.click(screen.getByRole('button', { name: 'Başla' }))
+    expect(screen.getByText(/Soru 1\/10/)).toBeInTheDocument()
+  })
+  test('learned-only mode with nothing learned shows a message, not an empty quiz', () => {
+    at('/practice')
+    fireEvent.click(screen.getByLabelText('Öğrendim dediklerim'))
+    fireEvent.click(screen.getByRole('button', { name: 'Başla' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('Henüz hiçbir kalıbı')
+    expect(screen.queryByText(/Soru 1\//)).not.toBeInTheDocument()
+  })
+  test.each(['null', '5', '{}', '"x"'])('corrupt learned storage (%s) does not crash', (raw) => {
+    localStorage.setItem('learned-phrases-v1', raw)
+    at('/practice')
+    fireEvent.click(screen.getByLabelText('Öğrendim dediklerim'))
+    fireEvent.click(screen.getByRole('button', { name: 'Başla' }))
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+  test('answering all questions wrong ends with a 0/10 score', () => {
+    at('/practice')
+    fireEvent.click(screen.getByRole('button', { name: 'Başla' }))
+    for (let i = 0; i < 10; i++) {
+      fireEvent.change(screen.getByRole('textbox'), { target: { value: 'zzz' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Kontrol et' }))
+      fireEvent.click(screen.getByRole('button', { name: i === 9 ? 'Bitir' : 'Sonraki' }))
+    }
+    expect(screen.getByText(/0\/10/)).toBeInTheDocument()
+  })
+})
