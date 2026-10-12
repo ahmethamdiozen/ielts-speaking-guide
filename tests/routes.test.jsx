@@ -97,3 +97,41 @@ describe('part 2 page', () => {
     expect(screen.getByLabelText('Doldurulan hikâye')).toHaveTextContent('1/8')
   })
 })
+
+describe('drill page', () => {
+  test('root of drill shows a part 1 question card', () => {
+    at('/drill')
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Çalışma')
+    expect(screen.getByTestId('question-text').textContent).toMatch(/\?$/)
+  })
+  test('unknown mode falls back to part 1', () => {
+    at('/drill/nope')
+    expect(screen.getByTestId('question-text')).toBeInTheDocument()
+  })
+  test('"Başka soru" changes the question without crashing', () => {
+    at('/drill/part3')
+    fireEvent.click(screen.getByRole('button', { name: 'Başka soru' }))
+    expect(screen.getByTestId('question-text').textContent).toMatch(/\?$/)
+  })
+  test('part 2: prep countdown moves into talking phase', () => {
+    vi.useFakeTimers()
+    try {
+      at('/drill/part2')
+      fireEvent.click(screen.getByRole('button', { name: 'Hazırlığı başlat' }))
+      act(() => { vi.advanceTimersByTime(61000) })
+      expect(screen.getByText(/Konuşma süresi/)).toBeInTheDocument()
+    } finally { vi.useRealTimers() }
+  })
+  test('part 2: renders with filled stories in storage', () => {
+    localStorage.setItem('stories-v1', JSON.stringify({
+      'person-admire': { tr: 'Dedem', en: '' }, 'place-visited': { tr: 'Roma', en: '' },
+    }))
+    at('/drill/part2')
+    expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument()
+  })
+  test.each(['null', '5', '"x"', '[]'])('corrupt stories storage (%s) does not crash the part 2 drill', (raw) => {
+    localStorage.setItem('stories-v1', raw)
+    at('/drill/part2')
+    expect(screen.getByRole('button', { name: 'Hazırlığı başlat' })).toBeInTheDocument()
+  })
+})

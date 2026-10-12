@@ -40,3 +40,45 @@ test('pickRandom handles empty, single and exceptId', () => {
   for (let i = 0; i < 20; i++) expect(pickRandom(list, Math.random, 'a').id).toBe('b')
   expect(pickRandom(list, () => 0.99).id).toBe('b')
 })
+
+import { useCountdown, formatTime } from '../src/lib/useCountdown.js'
+
+describe('useCountdown', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  test('counts down once per second and stops at zero', () => {
+    const { result } = renderHook(() => useCountdown(3))
+    act(() => result.current.start())
+    act(() => { vi.advanceTimersByTime(2000) })
+    expect(result.current.left).toBe(1)
+    act(() => { vi.advanceTimersByTime(10000) })
+    expect(result.current.left).toBe(0)
+    expect(result.current.running).toBe(false)
+  })
+  test('pause holds the value and reset restores it', () => {
+    const { result } = renderHook(() => useCountdown(5))
+    act(() => result.current.start())
+    act(() => { vi.advanceTimersByTime(2000) })
+    act(() => result.current.pause())
+    act(() => { vi.advanceTimersByTime(5000) })
+    expect(result.current.left).toBe(3)
+    act(() => result.current.reset())
+    expect(result.current.left).toBe(5)
+    act(() => result.current.reset(9))
+    expect(result.current.left).toBe(9)
+  })
+  test('unmount clears the interval', () => {
+    const spy = vi.spyOn(globalThis, 'clearInterval')
+    const { result, unmount } = renderHook(() => useCountdown(5))
+    act(() => result.current.start())
+    unmount()
+    expect(spy).toHaveBeenCalled()
+    spy.mockRestore()
+  })
+  test('formatTime', () => {
+    expect(formatTime(0)).toBe('0:00')
+    expect(formatTime(65)).toBe('1:05')
+    expect(formatTime(120)).toBe('2:00')
+  })
+})
